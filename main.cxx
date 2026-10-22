@@ -1,15 +1,18 @@
 
 #include <iostream>
-int main(int argc, char *argv[]) {
-  std::cout << "I am just a code template, you need to implement the "
-               "functionality you want to use yourself!"
-            << std::endl;
+#include <vector>
+#include "Measurement.h"
+#include "DataExtraction.h"
 
-  std::cout << "We were passed " << argc
-            << " command line arguments, the first of which was " << argv[0]
-            << std::endl;
-  std::cout << "With a good CLI library, we could use the command line "
-               "arguments to make a useful program."
-            << std::endl;
+int main() {
+  //const std::string csv_filename = "/home/macsch/MNXB11/git/MNXB11-project/cleaner/baredata_smhi-opendata_1_53430_20231007_155558_Lund.csv";
+  //const std::string output_filename = "measurements.root";
+
+
+  std::vector<Measurement> measurements = read_measurements("/home/macsch/MNXB11/git/MNXB11-project/cleaner/baredata_smhi-opendata_1_53430_20231007_155558_Lund.csv");
+
+  std::cout << "Number of measurements read" << measurements.size() << '\n';
+
+  persist_measurements(measurements, "measurements.root");
   return 0;
 }
