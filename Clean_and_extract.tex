@@ -1,0 +1,174 @@
+The original data files contained both the data and information in text regarding the data. To clean
+the files into a readable csv file without the text, we used a .sh cleaning script written by Florido
+Paganelli. This script develops different versions of the data file but the one that we preferred
+was a script with each line having the format of "year-month-day hour:minute:second temperature
+quality". The relevant parts of the cleaner script for this data format is shown.
+To start, using the script above, all the beginning lines with just text are completely. This works
+by reading the first lines of actual data with "STARTLINE" and directs the data to an output data
+file with ">".
+
+echo "Removing the first $STARTLINE lines, result in clean1_${DATAFILE}"
+tail -n +$STARTLINE original_${DATAFILE} > clean1_${DATAFILE}
+
+Then it cuts the text that is written next to data with the code below by using "cut" to select
+only the first 5 columns and redirects that to an output data file:
+
+echo "Selecting only relevant columns, result in clean2_${DATAFILE}"
+cut -d';' -f 1,2,3,4,5 clean1_${DATAFILE} > clean2_${DATAFILE}
+
+Lastly, it removed the semicolons that separate the data with "sed" and the semicolons were
+replaced with spaces and created the final cleaned csv file. The substitution is given with "’s/;/
+/g’":
+
+echo "Substituting the ; with spaces, result in baredata_${DATAFILE}"
+sed 's/;/ /g' clean2_${DATAFILE} > baredata_${DATAFILE}
+
+The final version of the cleaned data file is of the desired format:
+1780-01-01 07:00:00 -0.5 Y
+1780-01-01 13:00:00 1.0 Y
+1780-01-01 21:00:00 0.8 Y
+1780-01-02 21:00:00 -3.0 Y
+1780-01-03 13:00:00 1.3 Y
+1780-01-03 21:00:00 -6.8 Y
+1780-01-04 13:00:00 -9.0 Y
+1780-01-05 13:00:00 -7.0 Y
+1780-01-05 21:00:00 -10.0 Y
+1780-01-06 21:00:00 -14.0 Y
+
+Once we had the cleaned data file, the plan was to create a ROOT file with a branch for the
+variables: year, month, day, hour, minute, second, temp, and quality. This was done through a
+Measurement.cxx file and a DataExtraction.cxx file. The outlines for each script was used from
+example scripts by Oxana Smirnova and Einar Elen.
+The first script, Measurement.cxx was used to define how a measurement is accessed and stored:
+
+//Measurement.cxx
+#include "Measurement.h"
+//Constructor to initialize variables
+Measurement::Measurement(int year, int month, int day, int hour, int minute, int second, double temp
+: year{year}, month{month}, day{day}, hour{hour}, minute{minute}, second{second}, temp{temp}, qu
+}
+//getter functions to get the value of an object and be stored in the member value (the returned var
+int Measurement::get_year() const{
+return year;
+}
+int Measurement::get_month() const{
+return month;
+}
+int Measurement::get_day() const{
+return day;
+}
+int Measurement::get_hour() const{
+return hour;
+}
+int Measurement::get_minute() const{
+return minute;
+}
+int Measurement::get_second() const{
+return second;
+}
+double Measurement::get_temp() const{
+return temp;
+}
+char Measurement::get_quality() const{
+return quality;
+}
+bool Measurement::is_valid() const{
+return true;
+}
+
+The DataExtraction.cxx code is able to then read the csv file and use Measurement.cxx for the
+objects defined:
+
+//DataExtraction.cxx
+#include "DataExtraction.h"
+//Measurment is a class defined in Measurement.h
+//define the function read_measurements with the name given by the filename parameter
+std::vector<Measurement> read_measurements(const std::string& filename) {
+//std::ifstream is used to read the .csv file and create an input file stream named file
+//where {filename} initializes the stream
+std::ifstream file{filename};
+//creates empty measurements vector where objects from Measurement will be stored
+std::vector<Measurement> measurements;
+//define variables needed
+int year, month, day;
+int hour, minute, second;
+double temp;
+char quality;
+char dash;
+char colon;
+//Extract values from the file stream in a while loop
+// example: file >> variable will extract data from file and store the data in variable
+// In this case it expects to read: year-month-day hour:minute:second temp quality
+while (file >> year >> dash >> month >> dash >> day
+>> hour >> colon >> minute >> colon >> second >> temp >> quality) {
+//create object measurement which is used to test if the measurement is valid
+//using the .is_valid member function that returns true if it is valid
+Measurement measurement{year, month, day, hour, minute, second, temp, quality};
+if (measurement.is_valid()) {
+//.push_back member function is to add to the vector with evey iteration
+measurements.push_back(measurement);
+} else {
+std::cerr << "Warning: Skipping invalid measurement: ("
+<< year << "-" << month << "-" << day << ","
+<< hour << ":" << minute << ":" << second << ","
+<< temp << "," << quality << ")"
+<< std::endl;
+//std::endl is a stream manipulator that inserts a new line
+//(used in place of /n)
+//and flushes the output stream
+//(meaning it forces data in a memory buffer to move)
+}
+}
+return measurements;
+}
+//save the measurements to a ROOT file
+//having the output file pass into the function allows to reuse this script
+//with different output files
+void persist_measurements(const std::vector<Measurement>& measurements,
+const std::string& output_filename) {
+//create ROOT Tfile
+//c_str() is a function that returns a pointer (similar to using: const char*)
+TFile output_file{output_filename.c_str(), "RECREATE"};
+//create TTree with the name "MNXB11" and create datasets with a branch for each variable
+TTree tree{"MNXB11", "MNXB11"};
+Double_t temp;
+Int_t year;
+Int_t month;
+Int_t day;
+Int_t hour;
+Int_t minute;
+Int_t second;
+Int_t quality;
+tree.Branch("temp", &temp);
+tree.Branch("year", &year);
+tree.Branch("month", &month);
+tree.Branch("day", &day);
+tree.Branch("hour", &hour);
+tree.Branch("minute", &minute);
+tree.Branch("second", &second);
+tree.Branch("quality", &quality);
+//auto& is used to make a reference whos data type is determined by the compiler
+for (const auto& measurement : measurements) {
+year = measurement.get_year();
+month = measurement.get_month();
+day = measurement.get_day();
+hour = measurement.get_hour();
+minute = measurement.get_minute();
+second = measurement.get_second();
+temp = measurement.get_temp();
+quality = measurement.get_quality();
+tree.Fill();
+}
+tree.Write();
+}
+
+Within the DataExtraction.cxx file, there are notes to explain each portion of the script. As an
+overview, it starts by using the std::ifstream class to read files and create a vector using std::vector.
+The while loop extracts the data from the data file in the expected format and order that is shown in
+the parameters for the while loop. Using the .push_back member function it adds a Measurement
+object to the empty vector. Persist_measurements is created to save the measurements to an
+output file. The ROOT file is created using the output file and "RECREATE" with a tree named
+"MNXB11". Each variable is then connected to its own branch in the ROOT tree by defining them
+as ROOT variables and connecting them each to a branch using tree.Branch(). The for loop at the
+end is used to get the stored values using the getter functions defined in Measurement.cxx. The
+values are stored with tree.Fill() and the tree.Write writes the tree to the file.
