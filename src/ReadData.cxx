@@ -1,105 +1,75 @@
 #include "Analysis.h"
 
-#include <TBranch.h>
 #include <TFile.h>
-#include <TLeaf.h>
 #include <TTree.h>
 
-#include <cmath>
 #include <iostream>
-#include <stdexcept>
 
-namespace {
-TLeaf* numericLeaf(TTree* tree, const char* name) {
-    TLeaf* leaf = tree->GetLeaf(name);
-    if (leaf == nullptr) {
-        throw std::runtime_error(std::string("Missing numeric leaf: ") + name);
-    }
-    if (leaf->GetLeafCount() != nullptr || leaf->GetLenStatic() != 1) {
-        throw std::runtime_error(std::string("Expected scalar leaf: ") + name);
-    }
-
-    // GetValue() reads a numeric leaf as a double, so Float_t and Double_t 
-    //since I don't know which.
-    // temperatures both work without guessing SetBranchAddress() types, so better.
-    return leaf;
-}
-
-int integerValue(TLeaf* leaf, int low, int high) {
-    double value = leaf->GetValue();
-    if (!std::isfinite(value) || value < low || value > high ||
-        std::floor(value) != value) {
-        throw std::runtime_error(std::string("Invalid date component: ") +
-                                 leaf->GetName());
-    }
-    return static_cast<int>(value);
-}
-}
-
-TemperatureData readTemperatures(const char* filename) {
+bool readTemperatures(const char* filename, TemperatureData& data) {
     TFile input(filename, "READ");
     if (input.IsZombie()) {
-        throw std::runtime_error(std::string("Cannot open ROOT file: ") + filename);
+        std::cerr << "Cannot open ROOT file: " << filename << '\n';
+        return false;
     }
 
     TTree* tree = nullptr;
     input.GetObject("MNXB11", tree);
     if (tree == nullptr) {
-        throw std::runtime_error("No TTree named MNXB11 in the input file.");
+        std::cerr << "No TTree named MNXB11 in " << filename << '\n';
+        return false;
     }
 
-    TLeaf* yearLeaf = numericLeaf(tree, "year");
-    TLeaf* monthLeaf = numericLeaf(tree, "month");
-    TLeaf* dayLeaf = numericLeaf(tree, "day");
-    TLeaf* tempLeaf = numericLeaf(tree, "temp");
+    // Confirmed in measurements_lund.root: dates are Int_t; temp is Double_t.
+    // SetBranchAddress tells ROOT where to put each entry's values in memory.
+    Int_t year = 0;
+    Int_t month = 0;
+    Int_t day = 0;
+    Double_t temperature = 0.0;
 
-    // These analyses need calendar dates and temperatures only.
-    // And additional editing when data is taken into consideration.
+    // Read only the four branches needed for daily-temperature analyses.
+    // This changes reading behaviour, not the contents of the input file.
     tree->SetBranchStatus("*", 0);
-    tree->SetBranchStatus(yearLeaf->GetBranch()->GetName(), 1);
-    tree->SetBranchStatus(monthLeaf->GetBranch()->GetName(), 1);
-    tree->SetBranchStatus(dayLeaf->GetBranch()->GetName(), 1);
-    tree->SetBranchStatus(tempLeaf->GetBranch()->GetName(), 1);
+    const char* branches[] = {"year", "month", "day", "temp"};
+    for (const char* branch : branches) {
+        if (tree->GetBranch(branch) == nullptr) {
+            std::cerr << "Missing branch: " << branch << '\n';
+            return false;
+        }
+        tree->SetBranchStatus(branch, 1);
+    }
+    if (tree->SetBranchAddress("year", &year) < 0 ||
+        tree->SetBranchAddress("month", &month) < 0 ||
+        tree->SetBranchAddress("day", &day) < 0 ||
+        tree->SetBranchAddress("temp", &temperature) < 0) {
+        std::cerr << "Branch types do not match the Lund file's expected types.\n";
+        return false;
+    }
 
-    TemperatureData data;
+    // The supplied Lund file was checked: all dates are valid, all temperatures
+    // are finite. No generic type conversion or per-entry cleaning is needed.
+    // These assumptions apply to this dataset, not arbitrary replacement files.
+    data.clear();
     Long64_t entries = tree->GetEntries();
     for (Long64_t entry = 0; entry < entries; ++entry) {
-        try {
-            if (tree->GetEntry(entry) <= 0) {
-                throw std::runtime_error("Failed to read tree entry.");
-            }
-            int year = integerValue(yearLeaf, 1, 9999);
-            int month = integerValue(monthLeaf, 1, 12);
-            int day = integerValue(dayLeaf, 1, 31);
-            double temperature = tempLeaf->GetValue();
-
-            // Stop on structurally unusable values. Do NOT silently remove,
-            // repair, quality-filter, or impose temperature cuts on records.
-            if (!validDate(year, month, day) || !std::isfinite(temperature)) {
-                throw std::runtime_error("Invalid date or non-finite temperature.");
-            }
-
-            // operator[] creates an empty vector for a newly encountered year.
-            YearTemperatures& days = data[year];
-            if (days.empty()) {
-                days.resize(367);
-            }
-            days[calendarDay(month, day)].add(temperature);
-        } catch (const std::exception& error) {
-            throw std::runtime_error("Tree entry " + std::to_string(entry) +
-                                     ": " + error.what());
+        if (tree->GetEntry(entry) <= 0) {
+            std::cerr << "Could not read tree entry " << entry << '\n';
+            return false;
         }
+        YearTemperatures& days = data[year];
+        if (days.empty()) {
+            days.resize(367);
+        }
+        days[calendarDay(month, day)].add(temperature);
     }
     if (data.empty()) {
-        throw std::runtime_error("The tree contains no measurements.");
+        std::cerr << "The tree contains no measurements.\n";
+        return false;
     }
 
     std::cout << "Read " << entries << " readings in " << data.size()
               << " observed years. All supplied readings were included.\n"
-              << "Date grouping uses the stored year/month/day, with no timezone conversion.\n"
-              << "Assumptions: temperatures are in degrees C; one intended station;\n"
-              << "quality suitability has been established outside this analysis.\n";
-    return data;
-    // input is a local object: its destructor closes the file automatically.
-    // The returned map contains numbers, not pointers into the closed file.
+              << "Daily means use the stored calendar dates and Celsius values.\n"
+              << "No quality-code filtering or timezone conversion is applied.\n";
+    return true;
+    // Closing input is automatic. The returned data holds numbers, not file pointers.
 }

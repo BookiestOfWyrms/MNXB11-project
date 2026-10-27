@@ -45,3 +45,6 @@ argumentum*
 
 # Don't add the main executable to git
 main
+
+# Data-analysis executable
+/temperature_analysis

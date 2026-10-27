@@ -8,7 +8,8 @@
 // Each object accumulates the readings for ONE actual date in ONE year.
 // If the input already contains daily means, count will normally be 1.
 struct DailyTemperature {
-    double sum = 0.0;
+    // long double keeps extra precision in the daily sum on COSMOS.
+    long double sum = 0.0L;
     long long count = 0;
 
     void add(double temperature);
@@ -39,7 +40,8 @@ Summary summarize(const std::vector<double>& values);
 
 // Read the cleaned-up data, hopefully in the expected format so no debugging headaches
 // Ahahahaha.
-TemperatureData readTemperatures(const char* filename);
+// Return false with a printed message when the input cannot be read.
+bool readTemperatures(const char* filename, TemperatureData& data);
 
 // The three requested subsections, followed by the independent fourth idea.
 void analyzeGivenDay(const TemperatureData& data, int month, int day,

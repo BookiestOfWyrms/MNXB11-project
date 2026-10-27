@@ -7,7 +7,6 @@
 #include <TMultiGraph.h>
 
 #include <iostream>
-#include <stdexcept>
 #include <vector>
 
 namespace {
@@ -22,7 +21,8 @@ void describeYear(int year, const std::vector<double>& temperatures) {
 
 void compareYears(const TemperatureData& data, int earlierYear, int laterYear) {
     if (earlierYear >= laterYear) {
-        throw std::runtime_error("Comparison needs earlierYear < laterYear.");
+        std::cerr << "Comparison needs earlierYear < laterYear.\n";
+        return;
     }
     std::cout << "\nFourth analysis: " << earlierYear << " versus " << laterYear
               << " (" << laterYear - earlierYear << " years apart)\n";
@@ -110,6 +110,8 @@ void compareYears(const TemperatureData& data, int earlierYear, int laterYear) {
     }
     std::cout << "All-observed-day means can have different calendar coverage.\n"
               << "Paired results use the same dates; no gaps are interpolated.\n"
+              << "Reading times differ between years in this dataset; simple daily\n"
+              << "averages can retain time-of-day sampling bias.\n"
               << "This compares two individual years, not a century-long climate trend.\n";
 
     earlyGraph->SetMarkerStyle(20);

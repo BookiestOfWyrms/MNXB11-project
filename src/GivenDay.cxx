@@ -6,14 +6,18 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
-#include <stdexcept>
 
 void analyzeGivenDay(const TemperatureData& data, int month, int day,
                      double probabilityLow, double probabilityHigh) {
+    if (!validDate(2000, month, day)) {
+        std::cerr << "Selected calendar date is invalid.\n";
+        return;
+    }
     int slot = calendarDay(month, day);
     if (!std::isfinite(probabilityLow) || !std::isfinite(probabilityHigh) ||
         probabilityLow >= probabilityHigh) {
-        throw std::runtime_error("Probability interval must have finite low < high.");
+        std::cerr << "Probability interval must have finite low < high.\n";
+        return;
     }
 
     std::vector<double> temperatures;

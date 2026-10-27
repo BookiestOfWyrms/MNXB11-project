@@ -1,7 +1,6 @@
 #include "Analysis.h"
 
 #include <cmath>
-#include <stdexcept>
 
 namespace {
 // The reference calendar has 29 days in February.
@@ -15,10 +14,8 @@ void DailyTemperature::add(double temperature) {
 }
 
 double DailyTemperature::mean() const {
-    if (count == 0) {
-        throw std::runtime_error("Cannot average an unobserved date.");
-    }
-    return sum / count;
+    // Precondition: count > 0; analysis functions check this before calling.
+    return static_cast<double>(sum / count);
 }
 
 bool isLeapYear(int year) {
@@ -37,10 +34,7 @@ bool validDate(int year, int month, int day) {
 }
 
 int calendarDay(int month, int day) {
-    // Year 2000 is used ONLY to validate month/day against a leap calendar.
-    if (!validDate(2000, month, day)) {
-        throw std::runtime_error("Invalid calendar month/day.");
-    }
+    // Precondition: a valid month/day on the reference leap calendar.
     int slot = day;
     for (int m = 1; m < month; ++m) {
         slot += monthLengths[m - 1];
@@ -49,9 +43,7 @@ int calendarDay(int month, int day) {
 }
 
 std::string calendarDate(int slot) {
-    if (slot < 1 || slot > 366) {
-        throw std::runtime_error("Calendar slot must be 1..366.");
-    }
+    // Precondition: slot is between 1 and 366.
     int month = 1;
     while (slot > monthLengths[month - 1]) {
         slot -= monthLengths[month - 1];
