@@ -12,7 +12,7 @@
 #include <iomanip>
 #include <string>
 
-int main() {
+int main(int argc, char* argv[]){
   //const std::string csv_filename = "/home/macsch/MNXB11/git/MNXB11-project/cleaner/baredata_smhi-opendata_1_53430_20231007_155558_Lund.csv";
   //const std::string output_filename = "measurements.root";
 
@@ -56,6 +56,24 @@ int main() {
     char* rootArgv[] = {argv[0], nullptr};
     TApplication application("temperature_analysis", &rootArgc, rootArgv);
 
+    try {
+        std::cout << std::fixed << std::setprecision(4);
+        TemperatureData data = readTemperatures(filename);
+        analyzeGivenDay(data, selectedMonth, selectedDay,
+                        probabilityLow, probabilityHigh);
+        analyzeEveryDay(data);
+        analyzeYearExtremes(data);
+        // compareYears(data, earlierYear, laterYear);
+        if (!batch) {
+            std::cout << "\nPlots are open. Press Ctrl+C in the terminal to finish.\n";
+            application.Run();  // ROOT's event loop keeps the windows responsive.
+        }
+    } catch (const std::exception& error) {
+        std::cerr << "Analysis stopped: " << error.what() << '\n';
+        return 1;
+    }
+    return 0;
+}
 
 
   return 0;
