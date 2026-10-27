@@ -1,26 +1,18 @@
-CXX := g++
-CXXWARNINGS := -Wall -Wextra -Werror
-CXXOPT := -O3
-CXXSTD := -std=c++17
-INCLUDES := -I include
-CXXFLAGS := $(CXXWARNINGS) $(CXXSTD) $(CXXOPT) $(INCLUDES)
-LDFLAGS :=
+
+# ROOT's own flags select the C++ standard appropriate for its installation.
+CXX = $(shell root-config --cxx)
+CPPFLAGS += -Iinclude $(shell root-config --cflags)
+CXXFLAGS += -O2 -Wall -Wextra -Wpedantic
+LDLIBS += $(shell root-config --glibs)
+
+SOURCES = main.cxx src/AnalysisCommon.cxx src/ReadData.cxx src/GivenDay.cxx \
+          src/EveryDay.cxx src/YearExtremes.cxx src/CompareYears.cxx
 
 .PHONY: all clean
+all: temperature_analysis
 
-all: main
-
-# If you add new source files in the src/ directory, remember to add the
-# corresponding object file as a dependency here so that Make knows that it
-# should build it and link to it
-#
-# Remove the Example object file when you are done looking at it, it doesn't
-# contribute to the executable!
-main: main.cxx src/Example.o
-	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
-
-src/%.o: src/%.cxx
-	$(CXX) $(CXXFLAGS) $^ -c -o $@
+temperature_analysis: $(SOURCES) include/Analysis.h
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(SOURCES) -o $@ $(LDFLAGS) $(LDLIBS)
 
 clean:
-	rm -v src/*.o main
+	rm -f temperature_analysis
