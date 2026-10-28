@@ -51,17 +51,24 @@ void analyzeGivenDay(const TemperatureData& data, int month, int day,
         std::cout << "Only one year: SD = 0 describes that one value; variability is unknown.\n";
     }
 
-    // Choose the INITIAL range from the actual selected values, including all
-    // of them. No cuts, smoothing, rebinning, or later refinement is applied.
-    double low = std::floor(*std::min_element(temperatures.begin(), temperatures.end())) - 1.0;
-    double high = std::ceil(*std::max_element(temperatures.begin(), temperatures.end())) + 1.0;
-    std::string title = "Daily mean on " + calendarDate(slot) +
-                        ";Daily mean temperature [#circC];Observed years";
-    TH1D* histogram = new TH1D("given_day", title.c_str(), 60, low, high);
+
+    //Create the graph
+    std::string title = "Daily Mean Temperature on " + calendarDate(slot) +
+                        ";Mean Temperature (#circC); Counts (years)";
+    TH1D* histogram = new TH1D("given_day", title.c_str(), 60, 0, 30);
     histogram->SetDirectory(nullptr);
     for (int i = 0; i < summary.count; ++i) {
         histogram->Fill(temperatures[i]);
     }
     new TCanvas("given_day_canvas", "3.1: Selected day", 900, 600);
+    histogram->SetStats(0);
+    histogram->SetFillColor(9);
+    histogram->GetXaxis()->CenterTitle();
+    histogram->GetYaxis()->CenterTitle();
+    histogram->GetXaxis()->SetTitleSize(0.03);
+    histogram->GetYaxis()->SetTitleSize(0.03);
+    histogram->GetXaxis()->SetLabelSize(0.03);
+    histogram->GetYaxis()->SetLabelSize(0.03);
+    histogram->GetXaxis()->SetTitleOffset(1.2); 
     histogram->Draw("HIST");
 }
