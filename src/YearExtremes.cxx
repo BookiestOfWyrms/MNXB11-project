@@ -47,14 +47,10 @@ void analyzeYearExtremes(const TemperatureData& data) {
     cold->Sumw2();
     winter->Sumw2();
 
-    int partialYears = 0;
     std::cout << "\n3.3: Annual extremes of OBSERVED DAILY MEANS\n";
     for (const auto& year : data) {
         int coverage = observedDays(year.second);
         int expected = isLeapYear(year.first) ? 366 : 365;
-        if (coverage < expected) {
-            ++partialYears;
-        }
 
         std::vector<int> warmDates;
         std::vector<int> coldDates;
@@ -109,10 +105,6 @@ void analyzeYearExtremes(const TemperatureData& data) {
     int years = static_cast<int>(data.size());
     printModes(warm, "Warmest", years);
     printModes(cold, "Coldest", years);
-    std::cout << partialYears << " years have incomplete daily coverage; their extrema\n"
-              << "refer to observed days and may miss the true annual extreme.\n"
-              << "The July-to-June view answers the alternative-presentation part\n"
-              << "of 3.3. No Gaussian model or fitting assumption is imposed.\n";
 
     warm->SetMaximum(1.15 * std::max(warm->GetMaximum(), cold->GetMaximum()));
 
