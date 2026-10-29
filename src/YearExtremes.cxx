@@ -1,4 +1,5 @@
 #include "Analysis.h"
+#include "GraphStyle2.h"
 
 #include <TCanvas.h>
 #include <TH1D.h>
@@ -118,14 +119,8 @@ void analyzeYearExtremes(const TemperatureData& data) {
     TCanvas* canvas = new TCanvas("extremes_canvas", "3.3: Annual extreme dates", 1000, 850);
     canvas->Divide(1, 2);
     canvas->cd(1);
-    gPad->SetLeftMargin(0.08);
-
-    warm->GetXaxis()->CenterTitle();
-    warm->GetYaxis()->CenterTitle();
-
-    warm->SetTitleSize(0.04, "x");
-    warm->SetTitleSize(0.04, "y"); 
-    warm->GetYaxis()->SetTitleOffset(0.6);
+    
+    GraphStyle2(warm);
 
     warm->SetLineColor(kRed + 1);
     cold->SetLineColor(kBlue + 1);
@@ -140,14 +135,8 @@ void analyzeYearExtremes(const TemperatureData& data) {
     legend->Draw();
 
     canvas->cd(2);
-    gPad->SetLeftMargin(0.08);
-
-    winter->GetXaxis()->CenterTitle();
-    winter->GetYaxis()->CenterTitle();
-
-    winter->SetTitleSize(0.04, "x");
-    winter->SetTitleSize(0.04, "y");
-    winter->GetYaxis()->SetTitleOffset(0.6);
+    
+    GraphStyle2(winter);
 
     winter->Draw("HIST");
 }

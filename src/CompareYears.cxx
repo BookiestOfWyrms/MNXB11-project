@@ -136,8 +136,7 @@ void compareYears(const TemperatureData& data, int earlierYear, int laterYear) {
     lateGraph->Draw("P SAME");
 
     earlyGraph->GetXaxis()->SetLimits(0.5, 366.5);
-    earlyGraph->GetXaxis()->CenterTitle();
-    earlyGraph->GetYaxis()->CenterTitle();
+    GraphStyle2(earlyGraph);
 
     TLegend* legend = new TLegend(0.82, 0.75, 0.88, 0.89);
     legend->AddEntry(earlyGraph, std::to_string(earlierYear).c_str(), "p");
@@ -149,8 +148,7 @@ void compareYears(const TemperatureData& data, int earlierYear, int laterYear) {
         differenceGraph->SetTitle("Same-date difference (later - earlier);Day of year (leap-year scale); Temperature difference (#circC)");
         
         differenceGraph->GetXaxis()->SetLimits(0.5, 366.5);
-        differenceGraph->GetXaxis()->CenterTitle();
-        differenceGraph->GetYaxis()->CenterTitle();
+        GraphStyle2(differenceGraph);
 
         differenceGraph->Draw("AP");
     }

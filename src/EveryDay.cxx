@@ -60,6 +60,5 @@ void analyzeEveryDay(const TemperatureData& data) {
     auto legend = new TLegend(0.74, 0.82, 0.93, 0.94);
     legend->AddEntry(graph, "Standard deviation", "f");
     legend->AddEntry(line,"Mean temperature", "l");
-    legend->SetLineStyle(2);
     legend->Draw();
 }

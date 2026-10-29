@@ -1,8 +1,8 @@
-#include "GraphStyle.h"
+#include "GraphStyle1.h"
 #include <TStyle.h>
 
 
-void GraphStyle(){  
+void GraphStyle1(){  
   gStyle->SetOptStat(0);  // Get rid of the stat box
   gStyle->SetOptTitle(0);  // Get rid of the title (use legends)
 
