@@ -32,11 +32,11 @@ void printDates(const std::vector<int>& dates) {
 
 void analyzeYearExtremes(const TemperatureData& data) {
     TH1D* warm = new TH1D("warmest_dates",
-        "Warmest and coldest observed days;Calendar slot (leap-year scale);Year weight",
+        "Warmest and coldest observed days;Days of year (leap-year scale);Years (counts)",
         366, 0.5, 366.5);
     TH1D* cold = new TH1D("coldest_dates", "Coldest dates", 366, 0.5, 366.5);
     TH1D* winter = new TH1D("coldest_dates_july_axis",
-        "Coldest days on a July-to-June axis;Calendar offset from July 1;Year weight",
+        "Coldest days on a July-to-June axis;Days of year offset from July 1;Years (counts)",
         366, -0.5, 365.5);
     warm->SetDirectory(nullptr);
     cold->SetDirectory(nullptr);
@@ -113,23 +113,41 @@ void analyzeYearExtremes(const TemperatureData& data) {
               << "The July-to-June view answers the alternative-presentation part\n"
               << "of 3.3. No Gaussian model or fitting assumption is imposed.\n";
 
-    warm->SetStats(false);
-    cold->SetStats(false);
-    winter->SetStats(false);
-    warm->SetLineColor(kRed + 1);
-    cold->SetLineColor(kBlue + 1);
-    winter->SetLineColor(kBlue + 1);
     warm->SetMaximum(1.15 * std::max(warm->GetMaximum(), cold->GetMaximum()));
 
     TCanvas* canvas = new TCanvas("extremes_canvas", "3.3: Annual extreme dates", 1000, 850);
     canvas->Divide(1, 2);
     canvas->cd(1);
+    gPad->SetLeftMargin(0.08);
+
+    warm->GetXaxis()->CenterTitle();
+    warm->GetYaxis()->CenterTitle();
+
+    warm->SetTitleSize(0.04, "x");
+    warm->SetTitleSize(0.04, "y"); 
+    warm->GetYaxis()->SetTitleOffset(0.6);
+
+    warm->SetLineColor(kRed + 1);
+    cold->SetLineColor(kBlue + 1);
+    winter->SetLineColor(kBlue + 1);
+
     warm->Draw("HIST");
     cold->Draw("HIST SAME");
-    TLegend* legend = new TLegend(0.65, 0.72, 0.90, 0.89);
+
+    TLegend* legend = new TLegend(0.70, 0.72, 0.90, 0.89);
     legend->AddEntry(warm, "Warmest daily mean", "l");
     legend->AddEntry(cold, "Coldest daily mean", "l");
     legend->Draw();
+
     canvas->cd(2);
+    gPad->SetLeftMargin(0.08);
+
+    winter->GetXaxis()->CenterTitle();
+    winter->GetYaxis()->CenterTitle();
+
+    winter->SetTitleSize(0.04, "x");
+    winter->SetTitleSize(0.04, "y");
+    winter->GetYaxis()->SetTitleOffset(0.6);
+
     winter->Draw("HIST");
 }

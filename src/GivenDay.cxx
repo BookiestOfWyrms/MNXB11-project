@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <TLegend.h>
+
 
 void analyzeGivenDay(const TemperatureData& data, int month, int day,
                      double probabilityLow, double probabilityHigh) {
@@ -51,17 +53,23 @@ void analyzeGivenDay(const TemperatureData& data, int month, int day,
         std::cout << "Only one year: SD = 0 describes that one value; variability is unknown.\n";
     }
 
-    // Choose the INITIAL range from the actual selected values, including all
-    // of them. No cuts, smoothing, rebinning, or later refinement is applied.
-    double low = std::floor(*std::min_element(temperatures.begin(), temperatures.end())) - 1.0;
-    double high = std::ceil(*std::max_element(temperatures.begin(), temperatures.end())) + 1.0;
-    std::string title = "Daily mean on " + calendarDate(slot) +
-                        ";Daily mean temperature [#circC];Observed years";
-    TH1D* histogram = new TH1D("given_day", title.c_str(), 60, low, high);
+    //Create the graph
+    std::string title = " ;Mean Temperature (#circC); Counts (years)";
+    TH1D* histogram = new TH1D("given_day", title.c_str(), 60, 0, 30);
     histogram->SetDirectory(nullptr);
     for (int i = 0; i < summary.count; ++i) {
         histogram->Fill(temperatures[i]);
     }
     new TCanvas("given_day_canvas", "3.1: Selected day", 900, 600);
+
+    histogram->SetFillColor(kAzure-8);
+    histogram->SetLineColor(kAzure+2);
+    histogram->GetXaxis()->CenterTitle();
+    histogram->GetYaxis()->CenterTitle(); 
     histogram->Draw("HIST");
+
+    auto legend = new TLegend(0.78, 0.85, 0.86, 0.91);
+    legend->AddEntry(histogram, calendarDate(slot).c_str(), "f");
+    legend->SetLineStyle(2);
+    legend->Draw();
 }
