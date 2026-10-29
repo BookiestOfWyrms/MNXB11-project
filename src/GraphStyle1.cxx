@@ -1,8 +1,8 @@
 #include "GraphStyle1.h"
+
 #include <TPad.h>
 
-
-void GraphStyle1(TH1D* hist){  
+void GraphStyle1(TH1D* hist) {
   hist->SetStats(false);
 
   hist->GetXaxis()->SetTitleSize(0.04);
@@ -20,8 +20,7 @@ void GraphStyle1(TH1D* hist){
   gPad->SetLeftMargin(0.12);
 }
 
-void GraphStyle1(TGraphErrors* hist){
-
+void GraphStyle1(TGraphErrors* hist) {
   hist->GetXaxis()->SetTitleSize(0.04);
   hist->GetYaxis()->SetTitleSize(0.04);
   hist->GetXaxis()->CenterTitle();
@@ -36,4 +35,3 @@ void GraphStyle1(TGraphErrors* hist){
   gPad->SetBottomMargin(0.15);
   gPad->SetLeftMargin(0.12);
 }
-

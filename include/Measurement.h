@@ -4,8 +4,8 @@
 #include <stdexcept>
 class Measurement {
  public:
- Measurement(int year,int month, int day, int hour, int minute, 
-  int second, double temp, char quality);
+  Measurement(int year, int month, int day, int hour, int minute, int second,
+              double temp, char quality);
 
   bool is_valid() const;
   int get_year() const;
