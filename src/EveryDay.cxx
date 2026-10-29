@@ -4,13 +4,14 @@
 #include <TCanvas.h>
 #include <TGraphErrors.h>
 #include <TStyle.h>
+#include <TLegend.h>
 
 #include <iostream>
 
 void analyzeEveryDay(const TemperatureData& data) {
     TGraphErrors* graph = new TGraphErrors();
     graph->SetName("calendar_means");
-    graph->SetTitle(";Day of the year;Temperature (#circC)");
+    graph->SetTitle(";Day of year;Temperature (#circC)");
     graph->SetMarkerStyle(20);
     graph->SetMarkerSize(0.4);
 
@@ -41,16 +42,24 @@ void analyzeEveryDay(const TemperatureData& data) {
 
     std::cout << point << " calendar dates plotted; " << singleYearDates
               << " have only one observed year (zero descriptive SD).\n";
-    new TCanvas("every_day_canvas", "3.2: Every calendar date", 1100, 600);
+    auto cv =new TCanvas("every_day_canvas", "3.2: Every calendar date", 1100, 600);
+    cv->SetGridy();
 
     graph->GetXaxis()->CenterTitle();
     graph->GetYaxis()->CenterTitle();
     graph->GetXaxis()->SetLimits(0.5, 366.5);
 
-    graph->SetFillColor(kBlue-6);
+    graph->SetFillColor(kAzure-5);
     graph->Draw("A3");
 
     TGraph* line=new TGraph(*graph);
-    line->SetLineColor(2);
+    line->SetLineWidth(1.8);
+    line->SetLineColor(kBlack);
     line->Draw("L SAME");
+
+    auto legend = new TLegend(0.74, 0.82, 0.93, 0.94);
+    legend->AddEntry(graph, "Standard deviation", "f");
+    legend->AddEntry(line,"Mean temperature", "l");
+    legend->SetLineStyle(2);
+    legend->Draw();
 }

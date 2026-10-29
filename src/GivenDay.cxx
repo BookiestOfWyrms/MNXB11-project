@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <TLegend.h>
 
 
 void analyzeGivenDay(const TemperatureData& data, int month, int day,
@@ -62,8 +63,13 @@ void analyzeGivenDay(const TemperatureData& data, int month, int day,
     new TCanvas("given_day_canvas", "3.1: Selected day", 900, 600);
 
     histogram->SetFillColor(kAzure-8);
-    histogram->SetLineColor(kAzure+3);
+    histogram->SetLineColor(kAzure+2);
     histogram->GetXaxis()->CenterTitle();
     histogram->GetYaxis()->CenterTitle(); 
     histogram->Draw("HIST");
+
+    auto legend = new TLegend(0.78, 0.85, 0.86, 0.91);
+    legend->AddEntry(histogram, calendarDate(slot).c_str(), "f");
+    legend->SetLineStyle(2);
+    legend->Draw();
 }
