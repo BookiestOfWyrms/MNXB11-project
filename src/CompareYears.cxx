@@ -108,12 +108,6 @@ void compareYears(const TemperatureData& data, int earlierYear, int laterYear) {
             }
         }
     }
-    std::cout << "All-observed-day means can have different calendar coverage.\n"
-              << "Paired results use the same dates; no gaps are interpolated.\n"
-              << "Reading times differ between years in this dataset; simple daily\n"
-              << "averages can retain time-of-day sampling bias.\n"
-              << "This compares two individual years, not a century-long climate trend.\n";
-
     earlyGraph->SetMarkerStyle(20);
     earlyGraph->SetMarkerSize(0.5);
     earlyGraph->SetMarkerColor(kBlue + 1);

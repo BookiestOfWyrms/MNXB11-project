@@ -16,7 +16,6 @@ void analyzeEveryDay(const TemperatureData& data) {
     graph->SetMarkerSize(0.4);
 
     int point = 0;
-    int singleYearDates = 0;
     std::cout << "\n3.2: Calendar date, observed years, mean [C], descriptive SD [C]\n";
     for (int slot = 1; slot <= 366; ++slot) {
         std::vector<double> temperatures;
@@ -33,15 +32,10 @@ void analyzeEveryDay(const TemperatureData& data) {
         // These bars show year-to-year SD, NOT SD/sqrt(N) or measurement error.
         graph->SetPointError(point, 0.0, summary.standardDeviation);
         ++point;
-        if (summary.count == 1) {
-            ++singleYearDates;
-        }
         std::cout << calendarDate(slot) << "  " << summary.count << "  "
                   << summary.mean << "  " << summary.standardDeviation << '\n';
     }
 
-    std::cout << point << " calendar dates plotted; " << singleYearDates
-              << " have only one observed year (zero descriptive SD).\n";
     auto cv =new TCanvas("every_day_canvas", "3.2: Every calendar date", 1100, 600);
     cv->SetGridy();
 

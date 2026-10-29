@@ -66,10 +66,6 @@ bool readTemperatures(const char* filename, TemperatureData& data) {
         return false;
     }
 
-    std::cout << "Read " << entries << " readings in " << data.size()
-              << " observed years. All supplied readings were included.\n"
-              << "Daily means use the stored calendar dates and Celsius values.\n"
-              << "No quality-code filtering or timezone conversion is applied.\n";
     return true;
     // Closing input is automatic. The returned data holds numbers, not file pointers.
 }

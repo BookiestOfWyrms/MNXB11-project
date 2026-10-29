@@ -49,10 +49,6 @@ void analyzeGivenDay(const TemperatureData& data, int month, int day,
               << probabilityHigh << ") C = "
               << static_cast<double>(inInterval) / summary.count << " ("
               << inInterval << "/" << summary.count << ")\n";
-    if (summary.count == 1) {
-        std::cout << "Only one year: SD = 0 describes that one value; variability is unknown.\n";
-    }
-
     //Create the graph
     std::string title = " ;Mean Temperature (#circC); Counts (years)";
     TH1D* histogram = new TH1D("given_day", title.c_str(), 60, 0, 30);

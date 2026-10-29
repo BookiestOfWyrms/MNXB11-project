@@ -56,7 +56,6 @@ int main(int argc, char* argv[]){
     analyzeYearExtremes(data);
     compareYears(data, earlierYear, laterYear);
     if (!batch) {
-        std::cout << "\nPlots are open. Press Ctrl+C in the terminal to finish.\n";
         application.Run();  // ROOT's event loop keeps the windows responsive.
     }
     return 0;
