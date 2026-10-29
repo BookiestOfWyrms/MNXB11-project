@@ -1,30 +1,50 @@
-// This changelog follows GNU Style <https://www.gnu.org/prep/standards/html_node/Style-of-Change-Logs.html>
-// But you can delete the content if this file and pick any other standard
-// NOTE: copying git log over this file is NOT a ChangeLog! See this: <https://www.gnu.org/prep/standards/html_node/Change-Logs.html>
-// Changelog is a summary of a lot of related commits.
 
-# Template: 
+2026-10-22 Macaila Schafer 
 
-YYYY-MM-DD Name LastName  <email@somewhere>
+	Finished smhi cleaning and data extraction
 
-	High Level description of work done
+	* Added cleaned data and measurement files and daat extraction files
 
-	* Fine grained description of important things that you want to communicate
-	* Fine grained description of important things that you want to communicate
+2026-10-23
+	Started work on the project with some initial setup.
+	* Exact data format unknown at this time so varying levels of boilerplate have been added.
+	* Analysis.h header was created for ease of use.
 
 
-# Example (entries from newest to oldest):
+2026-10-24
+	Finished data extraction src file.
+	* Exact implementation should remain the same but everything else may not. 
+	* Some minor setup code for the actual analysis tasks.
 
-2025-09-26 Florido Paganelli  <florido.paganelli@fysik.lu.se>
+2026-10-25
+	Most important statistical work was done here.
+	* AnalysisCommon.cxx source file was written and the methods in Analysis.h have been implemented for later use across the other .cxx files.
+	* GivenDay.cxx and EveryDay.cxx have been written and mostly finalised. Task 3.1 and 3.2 should be largely done.
 
-	Reviewing content of project template
+2026-10-26
+	Work on Task 3.3
+	* Initial setup code was done, analysis is on the way.
 
-	* Added ChangeLog.txt with comments and examples
+2026-10-27
+	Work mostly finalised?
+	* Task 3.4 mostly finished., altered Makefile for compilation and updated AUTHORS
+	* Minor fixes and implementation tuning for the analysis.
+	* Structural rewrite to accomodate known data format; former TTree leaf implementation for data reading and input processing was completely done away with due to massive redundancy and unnecessary checks; data cleaner handled most of it.
+  
+2026-10-28 Lily-Jeanne Clément: 
+	
+	Formatted the first two single graphs
 
-2025-09-25 Florido Paganelli  <florido.paganelli@fysik.lu.se>
+	* Created GraphStyle1.h
+  
+2026-10-29 Macaila Schafer
 
-	Reviewing content of project template
+	README updated and forgot to upload cleaner .sh script
 
-	* Checking directory structure
-	* Added Workplan.md
+	* Added smhicleaner.sh and README.md
 
+2026-10-29 Lily-Jeanne Clément: 
+	
+	Formatted the last two double graphs, fitted data in CompareYears.cxx
+
+	* Created GraphStyle2.h
