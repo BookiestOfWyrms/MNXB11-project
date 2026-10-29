@@ -14,6 +14,6 @@ void GraphStyle(){
 
   gStyle->SetPadTopMargin(0.05);  // Change the margins to fit our new sizes
   gStyle->SetPadRightMargin(0.06);
-  gStyle->SetPadBottomMargin(0.14);
+  gStyle->SetPadBottomMargin(0.15);
   gStyle->SetPadLeftMargin(0.12);
 };
