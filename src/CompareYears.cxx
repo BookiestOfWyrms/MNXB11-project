@@ -126,24 +126,32 @@ void compareYears(const TemperatureData& data, int earlierYear, int laterYear) {
     TCanvas* canvas = new TCanvas("comparison_canvas", "Fourth analysis: Two years", 1100, 850);
     canvas->Divide(1, 2);
     canvas->cd(1);
-    TMultiGraph* comparison = new TMultiGraph();
+
     std::string title = std::to_string(earlierYear) + " versus " +
                         std::to_string(laterYear) +
-                        ";Calendar slot (leap-year scale);Daily mean temperature [#circC]";
-    comparison->SetTitle(title.c_str());
-    comparison->Add(earlyGraph, "P");
-    comparison->Add(lateGraph, "P");
-    comparison->Draw("AP");
-    comparison->GetXaxis()->SetLimits(0.5, 366.5);
-    TLegend* legend = new TLegend(0.73, 0.75, 0.90, 0.89);
+                        ";Day of year (leap-year scale);Mean temperature (#circC)";
+    earlyGraph->SetTitle(title.c_str());
+
+    earlyGraph->Draw("AP");
+    lateGraph->Draw("P SAME");
+
+    earlyGraph->GetXaxis()->SetLimits(0.5, 366.5);
+    earlyGraph->GetXaxis()->CenterTitle();
+    earlyGraph->GetYaxis()->CenterTitle();
+
+    TLegend* legend = new TLegend(0.82, 0.75, 0.88, 0.89);
     legend->AddEntry(earlyGraph, std::to_string(earlierYear).c_str(), "p");
     legend->AddEntry(lateGraph, std::to_string(laterYear).c_str(), "p");
     legend->Draw();
 
     canvas->cd(2);
     if (!differences.empty()) {
-        differenceGraph->SetTitle("Same-date difference (later - earlier);Calendar slot (leap-year scale);Temperature difference [#circC]");
-        differenceGraph->Draw("AP");
+        differenceGraph->SetTitle("Same-date difference (later - earlier);Day of year (leap-year scale); Temperature difference (#circC)");
+        
         differenceGraph->GetXaxis()->SetLimits(0.5, 366.5);
+        differenceGraph->GetXaxis()->CenterTitle();
+        differenceGraph->GetYaxis()->CenterTitle();
+
+        differenceGraph->Draw("AP");
     }
 }
