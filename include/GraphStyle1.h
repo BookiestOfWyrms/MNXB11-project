@@ -1,6 +1,10 @@
 #ifndef GRAPHSTYLE1_H
 #define GRAPHSTYLE1_H
 
-void GraphStyle1();
+#include <TH1D.h>
+#include <TGraphErrors.h>
 
-#endif //GRAPHSTYLE1.H/
+void GraphStyle1(TH1D* hist);
+void GraphStyle1(TGraphErrors* hist);
+
+#endif //GRAPHSTYLE1.H

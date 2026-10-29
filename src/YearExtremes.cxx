@@ -33,11 +33,11 @@ void printDates(const std::vector<int>& dates) {
 
 void analyzeYearExtremes(const TemperatureData& data) {
     TH1D* warm = new TH1D("warmest_dates",
-        "Warmest and coldest observed days;Days of year (leap-year scale);Years (counts)",
+        ";Days of year (leap-year scale);Years (counts)",
         366, 0.5, 366.5);
     TH1D* cold = new TH1D("coldest_dates", "Coldest dates", 366, 0.5, 366.5);
     TH1D* winter = new TH1D("coldest_dates_july_axis",
-        "Coldest days on a July-to-June axis;Days of year offset from July 1;Years (counts)",
+        ";Days of year offset from July 1;Years (counts)",
         366, -0.5, 365.5);
     warm->SetDirectory(nullptr);
     cold->SetDirectory(nullptr);

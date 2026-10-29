@@ -1,19 +1,39 @@
 #include "GraphStyle1.h"
-#include <TStyle.h>
+#include <TPad.h>
 
 
-void GraphStyle1(){  
-  gStyle->SetOptStat(0);  // Get rid of the stat box
-  gStyle->SetOptTitle(0);  // Get rid of the title (use legends)
+void GraphStyle1(TH1D* hist){  
+  hist->SetStats(false);
 
-  gStyle->SetLabelSize(0.035, "x");// Customize size axes labels
-  gStyle->SetLabelSize(0.035, "y");
-  gStyle->SetTitleSize(0.04, "x");  // Use bigger text on the axes
-  gStyle->SetTitleSize(0.04, "y");
-  gStyle->SetTitleOffset(1.6,"x");     // Change distance axes and title
+  hist->GetXaxis()->SetTitleSize(0.04);
+  hist->GetYaxis()->SetTitleSize(0.04);
+  hist->GetXaxis()->CenterTitle();
+  hist->GetYaxis()->CenterTitle();
+  hist->GetXaxis()->SetTitleOffset(1.2);
 
-  gStyle->SetPadTopMargin(0.05);  // Change the margins to fit our new sizes
-  gStyle->SetPadRightMargin(0.06);
-  gStyle->SetPadBottomMargin(0.15);
-  gStyle->SetPadLeftMargin(0.12);
-};
+  hist->GetXaxis()->SetLabelSize(0.035);
+  hist->GetYaxis()->SetLabelSize(0.035);
+
+  gPad->SetTopMargin(0.05);  // Change the margins to fit our new sizes
+  gPad->SetRightMargin(0.06);
+  gPad->SetBottomMargin(0.15);
+  gPad->SetLeftMargin(0.12);
+}
+
+void GraphStyle1(TGraphErrors* hist){
+
+  hist->GetXaxis()->SetTitleSize(0.04);
+  hist->GetYaxis()->SetTitleSize(0.04);
+  hist->GetXaxis()->CenterTitle();
+  hist->GetYaxis()->CenterTitle();
+  hist->GetXaxis()->SetTitleOffset(1.2);
+
+  hist->GetXaxis()->SetLabelSize(0.035);
+  hist->GetYaxis()->SetLabelSize(0.035);
+
+  gPad->SetTopMargin(0.05);  // Change the margins to fit our new sizes
+  gPad->SetRightMargin(0.06);
+  gPad->SetBottomMargin(0.15);
+  gPad->SetLeftMargin(0.12);
+}
+

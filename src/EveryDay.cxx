@@ -1,4 +1,5 @@
 #include "Analysis.h"
+#include "GraphStyle1.h"
 
 #include <TAxis.h>
 #include <TCanvas.h>
@@ -45,11 +46,11 @@ void analyzeEveryDay(const TemperatureData& data) {
     auto cv =new TCanvas("every_day_canvas", "3.2: Every calendar date", 1100, 600);
     cv->SetGridy();
 
-    graph->GetXaxis()->CenterTitle();
-    graph->GetYaxis()->CenterTitle();
     graph->GetXaxis()->SetLimits(0.5, 366.5);
+    GraphStyle1(graph);
 
     graph->SetFillColor(kAzure-5);
+
     graph->Draw("A3");
 
     TGraph* line=new TGraph(*graph);

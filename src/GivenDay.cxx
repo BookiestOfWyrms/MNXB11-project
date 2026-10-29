@@ -1,4 +1,5 @@
 #include "Analysis.h"
+#include "GraphStyle1.h"
 
 #include <TCanvas.h>
 #include <TH1D.h>
@@ -64,12 +65,10 @@ void analyzeGivenDay(const TemperatureData& data, int month, int day,
 
     histogram->SetFillColor(kAzure-8);
     histogram->SetLineColor(kAzure+2);
-    histogram->GetXaxis()->CenterTitle();
-    histogram->GetYaxis()->CenterTitle(); 
+    GraphStyle1(histogram);
     histogram->Draw("HIST");
 
     auto legend = new TLegend(0.78, 0.85, 0.86, 0.91);
     legend->AddEntry(histogram, calendarDate(slot).c_str(), "f");
-    legend->SetLineStyle(2);
     legend->Draw();
 }

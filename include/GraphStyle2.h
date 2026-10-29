@@ -1,7 +1,10 @@
 #ifndef GRAPHSTYLE2_H
 #define GRAPHSTYLE2_H
-#include <TH1.h>
 
-void GraphStyle2(TH1* graph);
+#include <TH1D.h>
+#include <TGraph.h>
 
-#endif //GRAPHSTYLE2.H/
+void GraphStyle2(TH1D* graph);
+void GraphStyle2(TGraph* graph);
+
+#endif //GRAPHSTYLE2.H

@@ -1,7 +1,6 @@
 
 #include <iostream>
 #include "Analysis.h"
-#include "GraphStyle1.h"
 
 #include <TApplication.h>
 #include <TROOT.h>
@@ -42,8 +41,6 @@ int main(int argc, char* argv[]){
     int rootArgc = 1;
     char* rootArgv[] = {argv[0], nullptr};
     TApplication application("temperature_analysis", &rootArgc, rootArgv);
-
-    GraphStyle1();
 
     std::cout << std::fixed << std::setprecision(4);
     TemperatureData data;
