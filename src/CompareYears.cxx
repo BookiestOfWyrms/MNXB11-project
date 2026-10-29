@@ -1,10 +1,13 @@
 #include "Analysis.h"
+#include "GraphStyle2.h"
 
 #include <TAxis.h>
 #include <TCanvas.h>
 #include <TGraph.h>
 #include <TLegend.h>
 #include <TMultiGraph.h>
+#include <TF1.h>
+#include <TMath.h>
 
 #include <iostream>
 #include <vector>
@@ -113,31 +116,41 @@ void compareYears(const TemperatureData& data, int earlierYear, int laterYear) {
               << "Reading times differ between years in this dataset; simple daily\n"
               << "averages can retain time-of-day sampling bias.\n"
               << "This compares two individual years, not a century-long climate trend.\n";
-
-    earlyGraph->SetMarkerStyle(20);
-    earlyGraph->SetMarkerSize(0.5);
-    earlyGraph->SetMarkerColor(kBlue + 1);
-    lateGraph->SetMarkerStyle(24);
-    lateGraph->SetMarkerSize(0.5);
-    lateGraph->SetMarkerColor(kRed + 1);
-    differenceGraph->SetMarkerStyle(20);
-    differenceGraph->SetMarkerSize(0.5);
+    
 
     TCanvas* canvas = new TCanvas("comparison_canvas", "Fourth analysis: Two years", 1100, 850);
     canvas->Divide(1, 2);
+
+    earlyGraph->SetMarkerSize(10);
+    earlyGraph->SetMarkerColor(kBlue + 1);
+    lateGraph->SetMarkerSize(10);
+    lateGraph->SetMarkerColor(kRed + 1);
+    differenceGraph->SetMarkerSize(10);
+
     canvas->cd(1);
 
-    std::string title = std::to_string(earlierYear) + " versus " +
-                        std::to_string(laterYear) +
-                        ";Day of year (leap-year scale);Mean temperature (#circC)";
+    std::string title = ";Day of year (leap-year scale);Mean temperature (#circC)";
     earlyGraph->SetTitle(title.c_str());
-
+    GraphStyle2(earlyGraph);
+    earlyGraph->GetXaxis()->SetLimits(0.5, 366.5);
+    earlyGraph->GetYaxis()->SetLimits(0.5, 366.5);
+    
     earlyGraph->Draw("AP");
     lateGraph->Draw("P SAME");
 
-    earlyGraph->GetXaxis()->SetLimits(0.5, 366.5);
-    earlyGraph->GetXaxis()->CenterTitle();
-    earlyGraph->GetYaxis()->CenterTitle();
+    // Fit both set of data to compare trends
+    TF1* earlyFit = new TF1("earlyFit", "[0] + [1]*sin(2*TMath::Pi()*(x-[2])/366.)", 1, 366);
+    TF1* lateFit  = new TF1("lateFit",  "[0] + [1]*sin(2*TMath::Pi()*(x-[2])/366.)", 1, 366);
+    earlyFit->SetParameters(10, 15, 100);
+    lateFit->SetParameters(10, 15, 100);
+    earlyFit->SetLineColor(kBlue + 1);
+    lateFit->SetLineColor(kRed + 1);
+
+    earlyGraph->Fit(earlyFit, "0Q", "", 1, 366);
+    lateGraph->Fit(lateFit, "0Q", "", 1, 366);
+    earlyFit->Draw("SAME");
+    lateFit->Draw("SAME");
+
 
     TLegend* legend = new TLegend(0.82, 0.75, 0.88, 0.89);
     legend->AddEntry(earlyGraph, std::to_string(earlierYear).c_str(), "p");
@@ -145,13 +158,23 @@ void compareYears(const TemperatureData& data, int earlierYear, int laterYear) {
     legend->Draw();
 
     canvas->cd(2);
-    if (!differences.empty()) {
-        differenceGraph->SetTitle("Same-date difference (later - earlier);Day of year (leap-year scale); Temperature difference (#circC)");
-        
-        differenceGraph->GetXaxis()->SetLimits(0.5, 366.5);
-        differenceGraph->GetXaxis()->CenterTitle();
-        differenceGraph->GetYaxis()->CenterTitle();
+    differenceGraph->SetTitle(";Day of year (leap-year scale); Temperature difference (#circC)");
+    
+    differenceGraph->GetXaxis()->SetLimits(0.5, 366.5);
+    GraphStyle2(differenceGraph);
 
-        differenceGraph->Draw("AP");
-    }
+    differenceGraph->Draw("AP");
+
+        // Mean of difference
+    TF1* meanFit = new TF1("meanFit", "pol0", 1, 366);
+    meanFit->SetLineColor(kBlack);
+    differenceGraph->Fit(meanFit, "0Q", "", 1, 366);
+    meanFit->Draw("SAME");
+
+    // Global Fit difference
+    TF1* globalFit = new TF1("globalFit", "[0] + [1]*sin(2*TMath::Pi()*(x-[2])/366.)", 1, 366);
+    globalFit->SetParameters(0., 3., 0.);
+    globalFit->SetLineColor(kGreen + 2);
+    differenceGraph->Fit(globalFit, "0Q", "", 1, 366);
+    globalFit->Draw("SAME");
 }

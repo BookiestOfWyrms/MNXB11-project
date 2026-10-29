@@ -5,7 +5,6 @@
 
 	* Added cleaned data and measurement files and daat extraction files
 
-
 2026-10-23
 	Started work on the project with some initial setup.
 	* Exact data format unknown at this time so varying levels of boilerplate have been added.
@@ -31,10 +30,21 @@
 	* Task 3.4 mostly finished., altered Makefile for compilation and updated AUTHORS
 	* Minor fixes and implementation tuning for the analysis.
 	* Structural rewrite to accomodate known data format; former TTree leaf implementation for data reading and input processing was completely done away with due to massive redundancy and unnecessary checks; data cleaner handled most of it.
+  
+2026-10-28 Lily-Jeanne Clément: 
+	
+	Formatted the first two single graphs
 
+	* Created GraphStyle1.h
+  
 2026-10-29 Macaila Schafer
 
 	README updated and forgot to upload cleaner .sh script
 
 	* Added smhicleaner.sh and README.md
 
+2026-10-29 Lily-Jeanne Clément: 
+	
+	Formatted the last two double graphs, fitted data in CompareYears.cxx
+
+	* Created GraphStyle2.h

@@ -1,4 +1,5 @@
 #include "Analysis.h"
+#include "GraphStyle2.h"
 
 #include <TCanvas.h>
 #include <TH1D.h>
@@ -32,11 +33,11 @@ void printDates(const std::vector<int>& dates) {
 
 void analyzeYearExtremes(const TemperatureData& data) {
     TH1D* warm = new TH1D("warmest_dates",
-        "Warmest and coldest observed days;Days of year (leap-year scale);Years (counts)",
+        ";Days of year (leap-year scale);Years (counts)",
         366, 0.5, 366.5);
     TH1D* cold = new TH1D("coldest_dates", "Coldest dates", 366, 0.5, 366.5);
     TH1D* winter = new TH1D("coldest_dates_july_axis",
-        "Coldest days on a July-to-June axis;Days of year offset from July 1;Years (counts)",
+        ";Days of year offset from July 1;Years (counts)",
         366, -0.5, 365.5);
     warm->SetDirectory(nullptr);
     cold->SetDirectory(nullptr);
@@ -118,14 +119,8 @@ void analyzeYearExtremes(const TemperatureData& data) {
     TCanvas* canvas = new TCanvas("extremes_canvas", "3.3: Annual extreme dates", 1000, 850);
     canvas->Divide(1, 2);
     canvas->cd(1);
-    gPad->SetLeftMargin(0.08);
-
-    warm->GetXaxis()->CenterTitle();
-    warm->GetYaxis()->CenterTitle();
-
-    warm->SetTitleSize(0.04, "x");
-    warm->SetTitleSize(0.04, "y"); 
-    warm->GetYaxis()->SetTitleOffset(0.6);
+    
+    GraphStyle2(warm);
 
     warm->SetLineColor(kRed + 1);
     cold->SetLineColor(kBlue + 1);
@@ -140,14 +135,8 @@ void analyzeYearExtremes(const TemperatureData& data) {
     legend->Draw();
 
     canvas->cd(2);
-    gPad->SetLeftMargin(0.08);
-
-    winter->GetXaxis()->CenterTitle();
-    winter->GetYaxis()->CenterTitle();
-
-    winter->SetTitleSize(0.04, "x");
-    winter->SetTitleSize(0.04, "y");
-    winter->GetYaxis()->SetTitleOffset(0.6);
+    
+    GraphStyle2(winter);
 
     winter->Draw("HIST");
 }

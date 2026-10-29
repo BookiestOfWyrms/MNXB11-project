@@ -6,7 +6,7 @@ CXXFLAGS += -O2 -Wall -Wextra -Wpedantic
 LDLIBS += $(shell root-config --glibs)
 
 SOURCES = main.cxx src/AnalysisCommon.cxx src/ReadData.cxx src/GivenDay.cxx \
-          src/EveryDay.cxx src/YearExtremes.cxx src/CompareYears.cxx src/GraphStyle.cxx
+          src/EveryDay.cxx src/YearExtremes.cxx src/CompareYears.cxx src/GraphStyle1.cxx src/GraphStyle2.cxx
 
 .PHONY: all clean
 all: temperature_analysis
