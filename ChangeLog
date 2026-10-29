@@ -1,35 +1,35 @@
 
 2026-10-22 Macaila Schafer 
 
-	Finished smhi cleaning and data extraction
+	Finished SMHI cleaning and data extraction
 
-	* Added cleaned data and measurement files and daat extraction files
+	* Added cleaned data, measurement files, and data extraction files
 
-2026-10-23
+2026-10-23 Matei Popescu
 	Started work on the project with some initial setup.
-	* Exact data format unknown at this time so varying levels of boilerplate have been added.
+	* Exact data format unknown at this time, so varying levels of boilerplate have been added.
 	* Analysis.h header was created for ease of use.
 
 
-2026-10-24
+2026-10-24 Matei Popescu
 	Finished data extraction src file.
-	* Exact implementation should remain the same but everything else may not. 
+	* Exact implementation should remain the same, but everything else may not. 
 	* Some minor setup code for the actual analysis tasks.
 
-2026-10-25
+2026-10-25 Matei Popescu
 	Most important statistical work was done here.
-	* AnalysisCommon.cxx source file was written and the methods in Analysis.h have been implemented for later use across the other .cxx files.
+	* AnalysisCommon.cxx source file was written, and the methods in Analysis.h have been implemented for later use across the other .cxx files.
 	* GivenDay.cxx and EveryDay.cxx have been written and mostly finalised. Task 3.1 and 3.2 should be largely done.
 
-2026-10-26
+2026-10-26 Matei Popescu
 	Work on Task 3.3
-	* Initial setup code was done, analysis is on the way.
+	* Initial setup code was done; analysis is on the way; added ExtremeYears.cxx and CompareYears.cxx for the next part.
 
-2026-10-27
+2026-10-27 Matei Popescu
 	Work mostly finalised?
-	* Task 3.4 mostly finished., altered Makefile for compilation and updated AUTHORS
+	* Task 3.4 mostly finished; altered Makefile for compilation and updated AUTHORS;
 	* Minor fixes and implementation tuning for the analysis.
-	* Structural rewrite to accomodate known data format; former TTree leaf implementation for data reading and input processing was completely done away with due to massive redundancy and unnecessary checks; data cleaner handled most of it.
+	* Structural rewrite to accommodate known data format; former TTree leaf implementation for data reading and input processing was completely done away with due to massive redundancy and unnecessary checks; data cleaner handled most of it.
   
 2026-10-28 Lily-Jeanne Clément: 
 	
@@ -48,3 +48,9 @@
 	Formatted the last two double graphs, fitted data in CompareYears.cxx
 
 	* Created GraphStyle2.h
+
+2026-10-29 Matei Popescu
+	Removed unnecessary prints to the console, performed minor code adjustments, and ran clang-format on all C++ files and ROOT files accordingly.
+
+
+
