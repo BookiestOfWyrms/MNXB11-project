@@ -7,6 +7,7 @@
 #include <cmath>
 #include <iostream>
 
+
 void analyzeGivenDay(const TemperatureData& data, int month, int day,
                      double probabilityLow, double probabilityHigh) {
     if (!validDate(2000, month, day)) {
@@ -51,24 +52,18 @@ void analyzeGivenDay(const TemperatureData& data, int month, int day,
         std::cout << "Only one year: SD = 0 describes that one value; variability is unknown.\n";
     }
 
-
     //Create the graph
-    std::string title = "Daily Mean Temperature on " + calendarDate(slot) +
-                        ";Mean Temperature (#circC); Counts (years)";
+    std::string title = " ;Mean Temperature (#circC); Counts (years)";
     TH1D* histogram = new TH1D("given_day", title.c_str(), 60, 0, 30);
     histogram->SetDirectory(nullptr);
     for (int i = 0; i < summary.count; ++i) {
         histogram->Fill(temperatures[i]);
     }
     new TCanvas("given_day_canvas", "3.1: Selected day", 900, 600);
-    histogram->SetStats(0);
-    histogram->SetFillColor(9);
+
+    histogram->SetFillColor(kAzure-8);
+    histogram->SetLineColor(kAzure+3);
     histogram->GetXaxis()->CenterTitle();
-    histogram->GetYaxis()->CenterTitle();
-    histogram->GetXaxis()->SetTitleSize(0.03);
-    histogram->GetYaxis()->SetTitleSize(0.03);
-    histogram->GetXaxis()->SetLabelSize(0.03);
-    histogram->GetYaxis()->SetLabelSize(0.03);
-    histogram->GetXaxis()->SetTitleOffset(1.2); 
+    histogram->GetYaxis()->CenterTitle(); 
     histogram->Draw("HIST");
 }

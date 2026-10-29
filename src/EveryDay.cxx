@@ -3,13 +3,14 @@
 #include <TAxis.h>
 #include <TCanvas.h>
 #include <TGraphErrors.h>
+#include <TStyle.h>
 
 #include <iostream>
 
 void analyzeEveryDay(const TemperatureData& data) {
     TGraphErrors* graph = new TGraphErrors();
     graph->SetName("calendar_means");
-    graph->SetTitle("Daily means across years;Calendar slot (leap-year scale);Temperature [#circC]");
+    graph->SetTitle(";Day of the year;Temperature (#circC)");
     graph->SetMarkerStyle(20);
     graph->SetMarkerSize(0.4);
 
@@ -41,6 +42,15 @@ void analyzeEveryDay(const TemperatureData& data) {
     std::cout << point << " calendar dates plotted; " << singleYearDates
               << " have only one observed year (zero descriptive SD).\n";
     new TCanvas("every_day_canvas", "3.2: Every calendar date", 1100, 600);
-    graph->Draw("AP");
+
+    graph->GetXaxis()->CenterTitle();
+    graph->GetYaxis()->CenterTitle();
     graph->GetXaxis()->SetLimits(0.5, 366.5);
+
+    graph->SetFillColor(kBlue-6);
+    graph->Draw("A3");
+
+    TGraph* line=new TGraph(*graph);
+    line->SetLineColor(2);
+    line->Draw("L SAME");
 }
