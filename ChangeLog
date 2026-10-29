@@ -5,9 +5,20 @@
 
 	* Added cleaned data and measurement files and daat extraction files
 
+2026-10-28 Lily-Jeanne Clément: 
+	
+	Formatted the first two single graphs
+
+	* Added GraphStyle1.h
+
 2026-10-29 Macaila Schafer
 
 	README updated and forgot to upload cleaner .sh script
 
 	* Added smhicleaner.sh and README.md
 
+2026-10-29 Lily-Jeanne Clément: 
+	
+	Formatted the last two double graphs
+
+	* Added GraphStyle2.h
