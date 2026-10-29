@@ -5,6 +5,33 @@
 
 	* Added cleaned data and measurement files and daat extraction files
 
+
+2026-10-23
+	Started work on the project with some initial setup.
+	* Exact data format unknown at this time so varying levels of boilerplate have been added.
+	* Analysis.h header was created for ease of use.
+
+
+2026-10-24
+	Finished data extraction src file.
+	* Exact implementation should remain the same but everything else may not. 
+	* Some minor setup code for the actual analysis tasks.
+
+2026-10-25
+	Most important statistical work was done here.
+	* AnalysisCommon.cxx source file was written and the methods in Analysis.h have been implemented for later use across the other .cxx files.
+	* GivenDay.cxx and EveryDay.cxx have been written and mostly finalised. Task 3.1 and 3.2 should be largely done.
+
+2026-10-26
+	Work on Task 3.3
+	* Initial setup code was done, analysis is on the way.
+
+2026-10-27
+	Work mostly finalised?
+	* Task 3.4 mostly finished., altered Makefile for compilation and updated AUTHORS
+	* Minor fixes and implementation tuning for the analysis.
+	* Structural rewrite to accomodate known data format; former TTree leaf implementation for data reading and input processing was completely done away with due to massive redundancy and unnecessary checks; data cleaner handled most of it.
+
 2026-10-29 Macaila Schafer
 
 	README updated and forgot to upload cleaner .sh script
