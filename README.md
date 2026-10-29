@@ -14,7 +14,15 @@ The ROOT file already produced is of weather data in and have branches for year,
 
 # Code Running
 Step 1: Please clone the repository on your local machine.
+
+
 Step 2: Make sure that you are on the main branch.
+
+
 Step 3: Enter the course container and run `make`.
+
+
 Step 4: Run `./temperature_analysis measurements_lund.root`.
+
+
 Step 5: After reviewing the plotting and overall console output, press `CTRL+C` to kill the ROOT instance still hanging.
