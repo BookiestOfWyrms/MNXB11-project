@@ -9,6 +9,18 @@
 #include "Analysis.h"
 
 int main(int argc, char* argv[]) {
+  //const std::string csv_filename = "/home/macsch/MNXB11/git/MNXB11-project/cleaner/baredata_smhi-opendata_1_53430_20231007_155558_Lund.csv";
+  //const std::string output_filename = "measurements.root";
+
+
+  std::vector<Measurement> measurements = read_measurements("./cleaner/baredata_smhi-opendata_1_53430_20231007_155558_Lund.csv");
+
+  std::cout << "Number of measurements read" << measurements.size() << '\n';
+
+  persist_measurements(measurements, "measurements_lund.root");
+
+
+  
   // Start from the existing ROOT dataset; data extraction is a separate step.
   // CHANGE YOUR ANALYSIS SETTINGS HERE, then run make again.
   const int selectedMonth = 8;
