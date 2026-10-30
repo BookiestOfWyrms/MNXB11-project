@@ -1,0 +1,156 @@
+
+
+This part of the report discusses the methodology and general coding practices used in the assignment repository. First, we discuss the common analysis methods used by the several different subtasks and then summarise the specific approach used in each.
+
+\subsection{Common Implementation and Shared Methods}
+The analysis reads the cleaned input data from \file{measurements\_lund.root} that stores a \file{TTree} named \file{MNXB11}. In \file{ReadData.cxx}, ROOT binds \file{year}, \file{month} and \file{day} to \file{Int\_t} variables and \file{temp} to a \file{Double\_t}. Only these branches are enabled. Invalid results from the reading methods cause the code to stop and throw exceptions.
+
+\textbf{Daily means.} For year $y$ and calendar date $d$, let $n_{y,d}$ be the
+number of supplied readings and $T_{y,d,i}$ the $i$th temperature. The quantity used
+throughout is
+\[
+ D_{y,d}=\frac{1}{n_{y,d}}\sum_{i=1}^{n_{y,d}}T_{y,d,i},\qquad n_{y,d}>0.
+\]
+\file{DailyTemperature} stores only a sum and count. The sum uses \file{long double} to reduce rounding during accumulation, and the returned mean is \file{double} for the sake of convenience. From \file{AnalysisCommon.cxx}:
+\begin{lstlisting}
+void DailyTemperature::add(double temperature) {
+  sum += temperature;
+  ++count;
+}
+double DailyTemperature::mean() const {
+  // Precondition: count > 0; analysis functions check this before calling.
+  return static_cast<double>(sum / count);
+}
+\end{lstlisting}
+Each observed date subsequently receives equal weight, regardless of its reading
+count. This avoids giving a year greater influence merely because it has more
+readings per day.
+
+\textbf{Calendar and missing observations.} \file{TemperatureData} maps each
+observed year to a vector of 367 daily accumulation variables. Index 0 is unused, while indices
+1--366 follow a common leap calendar: January 1 is 1, February 29 is 60,
+March 1 is 61 and July 1 is 183. Non-leap years leave slot 60 empty, so matching
+month/day labels remain aligned without issues with data formatting.
+We decided it was more reasonable to skip empty dates if they occurred.
+
+\textbf{Common statistics.} For any non-empty vector $x_1,\ldots,x_N$,
+\file{summarize()} calculates
+\[
+ \bar x=\frac{1}{N}\sum_i x_i,\qquad
+ s=\sqrt{\frac{1}{N}\sum_i(x_i-\bar x)^2}.
+\]
+The two-pass calculation first obtains $\bar x$ and then sums squared deviations.
+The denominator $N$ describes the available population; this is \textbf{not}, technically, the standard error $s/\sqrt N$! An empty vector returns count zero, which is interpreted as data being unavailable. A 1-dimensional vector simply has $s =0$ by definition. We chose this methodology to make our statistical analysis without necessarily assuming a Gaussian distribution from the very get-go.
+
+\subsection{Subtask 3.1}
+The first question our implementation needs to address is to calculate the daily mean and standard deviation. \file{analyzeGivenDay()} in \file{GivenDay.cxx} collects one $D_{y,d}$ for each
+year containing date $d$. The current configuration in \file{main.cxx} chooses
+August 23. With $Y_d=\{y:n_{y,d}>0\}$ and $N_d=|Y_d|$, the answers are
+\[
+ \mu_d=\frac{1}{N_d}\sum_{y\in Y_d}D_{y,d},\qquad
+ \sigma_d=\sqrt{\frac{1}{N_d}\sum_{y\in Y_d}(D_{y,d}-\mu_d)^2}.
+\]
+$\sigma_d$ therefore measures variation \emph{between years on this date}, rather
+than fluctuations in temperature on a given day or some form of measurement uncertainty.
+\begin{lstlisting}
+  std::vector<double> temperatures;
+  for (const auto& year : data) {
+    if (year.second[slot].count > 0) {
+      temperatures.push_back(year.second[slot].mean());
+    }
+  }
+\end{lstlisting}
+\file{slot} is the selected date's calendar index; \file{year.second} is that year's vector. 
+
+Calling \file{summarize(temperatures)} then supplies the count, mean and SD. Invalid dates and non-finite results are simply unused. An unobserved date yields no statistical result and has no weight, to avoid bias in that sense.
+Our implementation estimates an interval frequency for a given temperature value, so directly computing the probability of observing one specific temperature is not possible, strictly speaking. For configured bounds $a<b$,
+\[
+ \widehat p_d([a,b))=
+ \frac{\#\{y\in Y_d:a\leq D_{y,d}<b\}}{N_d}.
+\]
+The current interval is $[15,20)$: 15 is included, and 20 is excluded.
+The relevant counting code is:
+\begin{lstlisting}
+  int inInterval = 0;
+  for (int i = 0; i < summary.count; ++i) {
+    if (temperatures[i] >= probabilityLow &&
+        temperatures[i] < probabilityHigh) {
+      ++inInterval;
+    }
+  }
+  \end{lstlisting}
+Division uses \file{static\_cast<double>(inInterval) / summary.count}, avoiding
+integer truncation.
+
+
+\subsection{Subtask 3.2}
+Up to the statistical analysis, subtask 3.2 is an application of subtask 3.1 to every single day in the calendar. We are therefore comparing day mean variances. We utilise the exact same collection and \file{summarize()} operations for slots 1--366. It reports
+$(d,N_d,\mu_d,\sigma_d)$, with $N_d$ recalculated separately for each date.
+Thus, missing observations do not interfere. February 29 uses only years with observations on February 29. Similarly to the above subsection, the supplied uncertainty magnitude is $\sigma_d$, the year-to-year descriptive
+SD defined above. It is not a confidence interval for $\mu_d$, or a measurement error.
+
+\subsection{Subtask 3.3}
+For this task, we must analyse year extremes. \file{analyzeYearExtremes()} in \file{YearExtremes.cxx} searches only the observed daily means of each year:
+\[
+ M_y=\max_{d:n_{y,d}>0}D_{y,d},\qquad
+ m_y=\min_{d:n_{y,d}>0}D_{y,d}.
+\]
+It retains every date attaining each extreme. These are extrema of \emph{daily means}, not extrema of individual temperature readings. The maximum search is below; a separate, analogous comparison finds the minimum.
+\begin{lstlisting}
+      double temperature = year.second[slot].mean();
+      if (warmDates.empty() || temperature > maximum) {
+        maximum = temperature;
+        warmDates.clear();
+        warmDates.push_back(slot);
+      } else if (temperature == maximum) {
+        warmDates.push_back(slot);
+      }
+\end{lstlisting}
+The surrounding loop skips empty dates before calling \file{mean()}. Although \file{maximum} and \file{minimum} start at zero, the empty-date-list tests accept the first observation unconditionally. 
+
+\textbf{Equal influence for tied years.} If year $y$ has $k_y$ tied warmest
+dates, each receives weight $1/k_y$. Writing their set as $W_y$, the accumulated
+date weight is
+\[
+ H_W(d)=\sum_y\frac{\mathbf{1}_{\{d\in W_y\}}}{|W_y|},
+ \qquad \sum_d H_W(d)=N_{\rm years}.
+\]
+The same construction applies to coldest dates. ROOT \file{TH1D} objects act as double-valued accumulator variables, so they conveniently allow fractional weights:
+\begin{lstlisting}
+    double warmWeight = 1.0 / warmDates.size();
+    double coldWeight = 1.0 / coldDates.size();
+    for (int i = 0; i < static_cast<int>(warmDates.size()); ++i) {
+      warm->Fill(warmDates[i], warmWeight);
+    }
+\end{lstlisting}
+This prevents years with several tied dates from being overcounted and biasing the resulting mean.
+
+\textbf{Likeliest extreme.} \file{printModes()} returns the date (or dates) with maximum accumulated weights and reports $\max_d H_W(d)/N_{\rm years}$, or its cold counterpart. A tolerance of $10^{-9}$ compares bin weights.
+
+\textbf{Year boundary handling.}  Calendar dates are cyclic:
+December 31 and January 1 are neighbours. Instead of fitting a wrapped Gaussian
+to the extreme-date distribution, we also calculate
+\[
+ d'=(d-183+366)\bmod 366.
+\]
+July 1 becomes 0, December 31 becomes 183, and January 1 becomes 184.
+
+\subsection{Task 3.4}
+In this subtask, we compare the temperature variation in Lund in 1990 and 2000. \file{compareYears()} in \file{CompareYears.cxx} requires the requested years to exist and the earlier year to precede the later one. It reports each year's mean and standard deviation over its own observed dates. To compare equal calendar coverage, it additionally
+forms the shared-date set $S$ and differences
+\[
+ \Delta_d=D_{2000,d}-D_{1900,d},\quad d\in S;\qquad
+ \overline\Delta=\frac{1}{|S|}\sum_{d\in S}\Delta_d.
+\]
+The pairing code executes the following statements only inside
+\file{if (hasEarly \&\& hasLate)}, excluding dates absent from either year:
+\begin{lstlisting}
+        double first = earlier->second[slot].mean();
+        double second = later->second[slot].mean();
+        double difference = second - first;
+        pairedEarly.push_back(first);
+        pairedLate.push_back(second);
+        differences.push_back(difference);
+        monthlyDifferences[month - 1].push_back(difference);
+\end{lstlisting}
+Positive differences mean warmer daily means in 2000. February 29 contributes to 2000's own-year summary but not the paired comparison, since 1900 is not a leap year. \file{summarize(differences)} supplies $\overline\Delta$ and its descriptive deviation $s$.
