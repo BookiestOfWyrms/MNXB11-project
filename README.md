@@ -20,7 +20,7 @@ Step 1: Please clone the repository on your local machine:
 * Open terminal;
 * Head into your specified `.git` directory;
 * Navigate into said directory: `cd ~/PATH/TO/git`;
-* Run `git clone git@github:BookiestOfWyrms/MNXB11-project.git/`.
+* Run `git clone git@github.com:BookiestOfWyrms/MNXB11-project.git/`.
 
 
 Step 2: Make sure that you are on the main branch:
