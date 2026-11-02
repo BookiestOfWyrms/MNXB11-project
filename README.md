@@ -19,7 +19,7 @@ The ROOT file already produced is of weather data in and have branches for year,
 Step 1: Please clone the repository on your local machine:
 * Open terminal;
 * Head into your specified `.git` directory;
-* Navigate into said directory: `cd ~/PATH/TO/.git`;
+* Navigate into said directory: `cd ~/PATH/TO/git`;
 * Run `git clone git@github:BookiestOfWyrms/MNXB11-project.git/`.
 
 
